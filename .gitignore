@@ -1,5 +1,9 @@
 target/
 !.mvn/wrapper/maven-wrapper.jar
+*.log
+*.err
+app.log
+app.err
 !**/src/main/**/target/
 !**/src/test/**/target/
 
