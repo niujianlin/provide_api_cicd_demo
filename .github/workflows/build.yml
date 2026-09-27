@@ -9,7 +9,7 @@ on:
 jobs:
   build:
     name: Build with JDK 8
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
 
     services:
       mysql:
@@ -35,10 +35,6 @@ jobs:
           distribution: temurin
           java-version: '8'
           cache: maven
-
-      - name: Init database schema
-        run: |
-          docker exec ${{ job.services.mysql.id }} mysql -uroot -p123456 apiprovide -e "CREATE TABLE IF NOT EXISTS users (id BIGINT NOT NULL AUTO_INCREMENT, name VARCHAR(255), email VARCHAR(255), PRIMARY KEY (id)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;"
 
       - name: Build with Maven
         run: mvn -B clean package -DskipTests=false --file pom.xml
