@@ -1,7 +1,6 @@
 package com.niujl.service;
 
 import com.niujl.bean.User;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,47 +15,38 @@ public class UserServiceTest {
     @Autowired
     private UserService userService;
 
-    @BeforeEach
-    public void setUp() {
-        // 确保数据库中有初始数据
-        User user = new User();
-        user.setName("Initial User");
-        user.setEmail("initial@example.com");
-        userService.addUser(user);
-    }
-
     @Test
     public void testGetAllUsers() {
         List<User> users = userService.getAllUsers();
-//        assertNotNull(users);
-        // 遍历输出
+        assertNotNull(users);
         for (User u : users) {
             System.out.println(u);
         }
     }
 
     @Test
-    public void testGetUserById() {
-        User user = userService.getUserById(1L);
-        assertNotNull(user);
-    }
-
-    @Test
-    public void testAddUser() {
+    public void testAddAndGetUserById() {
         User user = new User();
         user.setName("Test User");
         user.setEmail("test@example.com");
         userService.addUser(user);
-        assertNotNull(userService.getUserById(user.getId()));
+
+        assertNotNull(user.getId(), "插入后应回填自增主键");
+        User saved = userService.getUserById(user.getId());
+        assertNotNull(saved);
+        assertEquals("Test User", saved.getName());
     }
 
     @Test
     public void testUpdateUser() {
-        User user = userService.getUserById(1L);
-        String originalName = user.getName();
+        User user = new User();
+        user.setName("Before Update");
+        user.setEmail("before@example.com");
+        userService.addUser(user);
+
         user.setName("Updated Name");
         userService.updateUser(user);
-        assertEquals("Updated Name", userService.getUserById(1L).getName());
+        assertEquals("Updated Name", userService.getUserById(user.getId()).getName());
     }
 
     @Test
@@ -65,7 +55,9 @@ public class UserServiceTest {
         user.setName("ToDelete User");
         user.setEmail("todelete@example.com");
         userService.addUser(user);
-        userService.deleteUser(user.getId());
-        assertNull(userService.getUserById(user.getId()));
+
+        Long id = user.getId();
+        userService.deleteUser(id);
+        assertNull(userService.getUserById(id));
     }
 }

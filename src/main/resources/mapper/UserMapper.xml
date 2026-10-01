@@ -1,29 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.niujl.mapper.UserMapper">
+
     <resultMap id="UserResult" type="com.niujl.bean.User">
         <id column="id" property="id" jdbcType="BIGINT"/>
         <result column="name" property="name" jdbcType="VARCHAR"/>
         <result column="email" property="email" jdbcType="VARCHAR"/>
+        <result column="nickname" property="nickname" jdbcType="VARCHAR"/>
+        <result column="avatar" property="avatar" jdbcType="VARCHAR"/>
+        <result column="phone_cipher" property="phoneCipher" jdbcType="VARCHAR"/>
+        <result column="wechat_openid" property="wechatOpenid" jdbcType="VARCHAR"/>
+        <result column="apple_sub" property="appleSub" jdbcType="VARCHAR"/>
+        <result column="is_deleted" property="isDeleted" jdbcType="TINYINT"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
     </resultMap>
 
+    <sql id="Base_Column_List">
+        id, name, email, nickname, avatar, phone_cipher, wechat_openid, apple_sub, is_deleted, create_time, update_time
+    </sql>
+
     <select id="findAll" resultMap="UserResult">
-        SELECT * FROM users;
+        SELECT <include refid="Base_Column_List"/> FROM users ORDER BY id
     </select>
 
     <select id="findById" parameterType="long" resultMap="UserResult">
-        SELECT * FROM users WHERE id = #{id};
+        SELECT <include refid="Base_Column_List"/> FROM users WHERE id = #{id}
     </select>
 
-    <insert id="insert">
-        INSERT INTO users(name, email) VALUES(#{name}, #{email});
+    <select id="findByPhoneCipher" resultMap="UserResult">
+        SELECT <include refid="Base_Column_List"/> FROM users WHERE phone_cipher = #{phoneCipher} LIMIT 1
+    </select>
+
+    <select id="findByWechatOpenid" resultMap="UserResult">
+        SELECT <include refid="Base_Column_List"/> FROM users WHERE wechat_openid = #{wechatOpenid} LIMIT 1
+    </select>
+
+    <select id="findByAppleSub" resultMap="UserResult">
+        SELECT <include refid="Base_Column_List"/> FROM users WHERE apple_sub = #{appleSub} LIMIT 1
+    </select>
+
+    <insert id="insert" parameterType="com.niujl.bean.User" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO users(name, email, nickname, avatar, phone_cipher, wechat_openid, apple_sub, is_deleted)
+        VALUES(
+            #{name,jdbcType=VARCHAR},
+            #{email,jdbcType=VARCHAR},
+            #{nickname,jdbcType=VARCHAR},
+            #{avatar,jdbcType=VARCHAR},
+            #{phoneCipher,jdbcType=VARCHAR},
+            #{wechatOpenid,jdbcType=VARCHAR},
+            #{appleSub,jdbcType=VARCHAR},
+            IFNULL(#{isDeleted,jdbcType=TINYINT}, 0)
+        )
     </insert>
 
-    <update id="update">
-        UPDATE users SET name = #{name}, email = #{email} WHERE id = #{id};
+    <update id="update" parameterType="com.niujl.bean.User">
+        UPDATE users SET name = #{name}, email = #{email} WHERE id = #{id}
     </update>
 
-    <delete id="deleteById" parameterType="int">
-        DELETE FROM users WHERE id = #{id};
+    <update id="softDeleteById">
+        UPDATE users SET is_deleted = 1 WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM users WHERE id = #{id,jdbcType=BIGINT}
     </delete>
+
 </mapper>

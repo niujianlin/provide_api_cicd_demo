@@ -1,35 +1,46 @@
 package com.niujl.bean;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
+import java.util.Date;
+
+/**
+ * 用户实体。
+ *
+ * <p>注意：{@code phoneCipher} 为手机号密文，禁止直接对外输出明文。</p>
+ */
 @Data
 public class User {
+
     private Long id;
+
+    /** 姓名/昵称（兼容旧字段） */
     private String name;
+
+    /** 邮箱（兼容旧字段，允许为空） */
     private String email;
 
-    // Getters and Setters
-    public Long getId() {
-        return id;
-    }
+    private String nickname;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    private String avatar;
 
-    public String getName() {
-        return name;
-    }
+    /** 手机号密文（确定性 AES），仅内部使用，不对外序列化 */
+    @JsonIgnore
+    private String phoneCipher;
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    /** 微信 openid，仅内部使用，不对外序列化 */
+    @JsonIgnore
+    private String wechatOpenid;
 
-    public String getEmail() {
-        return email;
-    }
+    /** 苹果用户唯一标识 sub，仅内部使用，不对外序列化 */
+    @JsonIgnore
+    private String appleSub;
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+    /** 是否注销：0 正常，1 已注销 */
+    private Integer isDeleted;
+
+    private Date createTime;
+
+    private Date updateTime;
 }
